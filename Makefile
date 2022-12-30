@@ -4,6 +4,9 @@ build:
 run:
 	cargo run --release
 
+check:
+	cargi check --release
+
 pre-commit:
 	cargo check --release && cargo build --release && cargo test --release && cargo clippy --release && cargo fmt --all
 
