@@ -37,7 +37,7 @@ pub async fn handle_stream(conn: Conn) -> std::io::Result<()> {
                 break;
             }
             Ok(_read) => {
-                let video = tokio::fs::read("./examples/video.mp4").await?;
+                let video = tokio::fs::read("./video/video.mp4").await?;
                 /* Broadcast message to other sockets */
                 conn.connections.broadcast(video).await;
             }

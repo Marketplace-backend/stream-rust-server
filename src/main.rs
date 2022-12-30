@@ -8,7 +8,9 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 use tokio::net::TcpListener;
+use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
+use tokio::task;
 
 mod connections;
 mod handle_stream;
@@ -16,6 +18,8 @@ mod handle_stream;
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let connections = Connections::new(); /* Initialize struct containing all active connections */
+
+    let rt = Runtime::new()?;
 
     /* Parse arguments */
     let args: Vec<String> = env::args().collect();
@@ -46,7 +50,13 @@ async fn main() -> std::io::Result<()> {
                     connections: connections.clone(),
                 };
                 /* Spawn the handler thread */
-                tokio::spawn(handle_stream(conn)).await??;
+                let future = async move {
+                    task::spawn(handle_stream(conn))
+                        .await
+                        .expect("Cannot handle connection")
+                        .expect("Cannot create a task");
+                };
+                rt.spawn(future);
             }
             Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
                 /* Sleep for a bit when blocking error, an implementation of wait_for_fd would be better */
