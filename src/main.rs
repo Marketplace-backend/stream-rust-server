@@ -32,9 +32,7 @@ impl Conn {
     }
     async fn write(&self, buf: &[u8]) -> std::io::Result<usize> {
         match self.stream.try_lock() {
-            Ok(mut lock) => {
-                lock.write(buf).await
-            }
+            Ok(mut lock) => lock.write(buf).await,
             Err(_e) => Ok(0),
         }
     }
@@ -83,7 +81,6 @@ impl Connections {
     }
 }
 
-#[allow(clippy::read_zero_byte_vec)]
 async fn handle_stream(conn: Conn) -> std::io::Result<()> {
     /* Store the connection in the shared map */
     let id = conn.connections.store(conn.clone()).await;
