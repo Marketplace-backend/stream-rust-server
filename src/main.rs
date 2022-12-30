@@ -81,6 +81,7 @@ impl Connections {
     }
 }
 
+#[allow(clippy::read_zero_byte_vec)]
 async fn handle_stream(conn: Conn) -> std::io::Result<()> {
     /* Store the connection in the shared map */
     let id = conn.connections.store(conn.clone()).await;

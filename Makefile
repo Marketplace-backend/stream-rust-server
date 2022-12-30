@@ -5,7 +5,7 @@ run:
 	cargo run --release
 
 pre-commit:
-	cargo build --release && cargo test --release && cargo fmt --all && cargo check --release
+	cargo check --release && cargo build --release && cargo test --release && cargo fmt --all && cargo clippy --release
 
 commit: pre-commit
-	git add . && git commit -m $(argument) && git push
+	git add . && git commit -m "$(argument)" && git push
